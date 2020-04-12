@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from json import dumps
 from time import time
 from typing import Tuple
+import dateutil.parser
 
 import requests
 
@@ -78,7 +79,7 @@ class EvohomeClient(object):
                 f"Didn't get HTTP 200 (OK) response - status_code from server: {response.status_code}\n{response.text}")
         return response.json()
 
-    def get_location_data(self, locationId: int) -> dict:
+    def get_one_location_data(self, locationId: int) -> dict:
         '''Fetches the device info for a given location.
 
         Accepts:
@@ -99,7 +100,8 @@ class EvohomeClient(object):
         if not response.ok:
             raise Exception(
                 f"Didn't get HTTP 200 (OK) response - status_code from server: {response.status_code}\n{response.text}")
-        return response.json()
+        response_timestamp = int(dateutil.parser.parse(response.headers["Date"]).timestamp())
+        return response_timestamp, response.json()
 
     def get_thermostat_temperatures(self, locationId: int) -> dict:
         '''Fetches the current name, indoorTemperature and heatSetpoint for each device at a location
@@ -109,13 +111,17 @@ class EvohomeClient(object):
 
         Returns
             [{name, indoorTemperature, heatSetpoint}]
+            datetime            posix timestamp of response
+            deviceId            Identifier of the device.
             name    	        Device name.
             indoorTemperature  	Indoor temperature, if indoorTemperatureStatus='measured'.
             heatSetpoint      	Current heating setpoint.'''
-        this_location_data = self.get_location_data(locationId)
+        response_timestamp, this_location_data = self.get_one_location_data(locationId)
         temps = []
         for d in this_location_data["devices"]:
-            this_temps = {'name': d["name"],
+            this_temps = {'datetime': response_timestamp,
+                          'deviceId': d["deviceID"],
+                          'name': d["name"],
                           'heatSetpoint': d["thermostat"]["changeableValues"]["heatSetpoint"]["value"]}
             if d["thermostat"]["indoorTemperatureStatus"] == "Measured":
                 this_temps.update({'indoorTemperature': d["thermostat"]["indoorTemperature"]})
