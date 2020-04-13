@@ -1,13 +1,31 @@
 import logging
 from datetime import datetime, timedelta
 from json import dumps
+from os import getenv
 from time import time
 from typing import Tuple
-import dateutil.parser
 
+import dateutil.parser
 import requests
 
-from helpers import urljoin
+
+def urljoin(*args):
+    """
+    Joins given arguments into an url. Trailing but not leading slashes are
+    stripped for each argument.
+    """
+
+    return "/".join(map(lambda x: str(x).rstrip('/'), args))
+
+
+def getEnvVar(var_name):
+    """
+    fetches an environment variable or raises an exception if not found
+    """
+    val = getenv(var_name)
+    if not val:
+        raise Exception(f"can't find envvar {var_name}")
+    return val
 
 
 class EvohomeClient(object):
@@ -77,7 +95,7 @@ class EvohomeClient(object):
         if not response.ok:
             raise Exception(
                 f"Didn't get HTTP 200 (OK) response - status_code from server: {response.status_code}\n{response.text}")
-        return [{"name":x["name"], "locationID": x["locationID"]} for x in response.json()]
+        return [{"name": x["name"], "locationID": x["locationID"]} for x in response.json()]
 
     def get_one_location_data(self, locationId: int) -> dict:
         '''Fetches the device info for a given location.
