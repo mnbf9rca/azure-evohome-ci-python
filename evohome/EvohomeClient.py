@@ -1,9 +1,6 @@
 import logging
-from datetime import datetime, timedelta
 from json import dumps
 from os import getenv
-from time import time
-from typing import Tuple
 
 import dateutil.parser
 import requests
@@ -128,20 +125,27 @@ class EvohomeClient(object):
             locationId  identifier of the location
 
         Returns
+            locationId
             dict of {datetime, deviceId, name, heatSetpoint[, heatSetpoint]]}
             datetime            posix timestamp of response
             deviceId            Identifier of the device.
             name    	        Device name.
-            heatSetpoint      	Current heating setpoint.
-            indoorTemperature  	Indoor temperature, only if indoorTemperatureStatus='measured'.'''
+            data                dict(heatSetpoint, indoorTemperature)
+            where:
+                heatSetpoint      	Current heating setpoint.
+                indoorTemperature  	Indoor temperature, only if indoorTemperatureStatus='measured'.'''
         response_timestamp, this_location_data = self.get_one_location_data(locationId)
         temps = []
         for d in this_location_data["devices"]:
-            this_temps = {'datetime': response_timestamp,
-                          'deviceId': d["deviceID"],
-                          'name': d["name"],
-                          'heatSetpoint': d["thermostat"]["changeableValues"]["heatSetpoint"]["value"]}
+            this_temps = {'heatSetpoint': d["thermostat"]
+                          ["changeableValues"]["heatSetpoint"]["value"]}
             if d["thermostat"]["indoorTemperatureStatus"] == "Measured":
                 this_temps.update({'indoorTemperature': d["thermostat"]["indoorTemperature"]})
-            temps.append(this_temps)
+            this_record = {'locationId': locationId,
+                           'datetime': response_timestamp,
+                           'deviceId': d["deviceID"],
+                           'name': d["name"],
+                           'data': this_temps}
+
+            temps.append(this_record)
         return temps
