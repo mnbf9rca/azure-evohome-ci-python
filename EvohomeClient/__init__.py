@@ -62,7 +62,7 @@ class EvohomeClient(object):
         Accepts:
             None
         Returns:
-            dict    of all locations following https://tccna.honeywell.com/WebApi/Help/Model/TrueHome.WebApi.Models.Responses.LocationResponse
+            dict of {name: str, locationID: int}    of all locations
         '''
         api_endpoint = 'api/locations'
         uri = urljoin(self._api_base, api_endpoint)
@@ -77,7 +77,7 @@ class EvohomeClient(object):
         if not response.ok:
             raise Exception(
                 f"Didn't get HTTP 200 (OK) response - status_code from server: {response.status_code}\n{response.text}")
-        return response.json()
+        return [{"name":x["name"], "locationId": x["locationID"]} for x in response.json()]
 
     def get_one_location_data(self, locationId: int) -> dict:
         '''Fetches the device info for a given location.
@@ -85,7 +85,7 @@ class EvohomeClient(object):
         Accepts:
             locationId          identifier of the location
         Returns:
-            LocationResponse    conforming to https://tccna.honeywell.com/WebApi/Help/Model/TrueHome.WebApi.Models.Responses.LocationResponse
+            tupple response_timestamp, LocationResponse    conforming to https://tccna.honeywell.com/WebApi/Help/Model/TrueHome.WebApi.Models.Responses.LocationResponse
         '''
         api_endpoint = 'api/locations'
         uri = urljoin(self._api_base, api_endpoint)
@@ -110,12 +110,12 @@ class EvohomeClient(object):
             locationId  identifier of the location
 
         Returns
-            [{name, indoorTemperature, heatSetpoint}]
+            dict of {datetime, deviceId, name, heatSetpoint[, heatSetpoint]]}
             datetime            posix timestamp of response
             deviceId            Identifier of the device.
             name    	        Device name.
-            indoorTemperature  	Indoor temperature, if indoorTemperatureStatus='measured'.
-            heatSetpoint      	Current heating setpoint.'''
+            heatSetpoint      	Current heating setpoint.
+            indoorTemperature  	Indoor temperature, only if indoorTemperatureStatus='measured'.'''
         response_timestamp, this_location_data = self.get_one_location_data(locationId)
         temps = []
         for d in this_location_data["devices"]:
