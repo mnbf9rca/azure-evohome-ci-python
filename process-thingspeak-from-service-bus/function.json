@@ -7,7 +7,7 @@
       "type": "serviceBusTrigger",
       "direction": "in",
       "topicName": "evohome-data",
-      "subscriptionName": "thingspeak",
+      "subscriptionName": "ubidots",
       "connection": "functions-access"
     }
   ]
