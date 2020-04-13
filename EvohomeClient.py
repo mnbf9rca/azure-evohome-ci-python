@@ -77,7 +77,7 @@ class EvohomeClient(object):
         if not response.ok:
             raise Exception(
                 f"Didn't get HTTP 200 (OK) response - status_code from server: {response.status_code}\n{response.text}")
-        return [{"name":x["name"], "locationId": x["locationID"]} for x in response.json()]
+        return [{"name":x["name"], "locationID": x["locationID"]} for x in response.json()]
 
     def get_one_location_data(self, locationId: int) -> dict:
         '''Fetches the device info for a given location.
