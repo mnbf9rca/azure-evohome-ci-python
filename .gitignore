@@ -134,3 +134,6 @@ obj
 appsettings.json
 local.settings.json
 .python_packages
+.telemetry
+.vscode
+.DS_Store

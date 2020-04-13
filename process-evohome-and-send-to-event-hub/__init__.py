@@ -29,5 +29,8 @@ def main(mytimer: func.TimerRequest) -> None:
 
     logging.info('Python timer trigger function ran at %s', utc_timestamp)
     eh_usernamne = getEnvVar("evohome_username")
+    eh_password = getEnvVar("evohome_password")
+    eh_api_key = getEnvVar("eh_api_key")
 
-    print(eh_usernamne)
+    ehc = EvohomeClient(username = eh_usernamne, password = eh_password, appid= eh_api_key)
+    
