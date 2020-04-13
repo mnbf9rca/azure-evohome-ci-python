@@ -5,7 +5,7 @@ import azure.functions as func
 from azure.eventhub import EventData
 from azure.eventhub.aio import EventHubProducerClient
 
-from evohome import EvohomeClient
+from evohome.EvohomeClient import EvohomeClient
 from evohome.helpers import getEnvVar
 
 def main(mytimer: func.TimerRequest) -> None:
@@ -19,4 +19,6 @@ def main(mytimer: func.TimerRequest) -> None:
     eh_usernamne = getEnvVar("evohome_username")
 
     print(eh_usernamne)
+    
+    
 
