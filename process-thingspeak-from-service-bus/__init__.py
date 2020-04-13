@@ -13,3 +13,15 @@ def main(message: func.ServiceBusMessage):
     logging.info("Python ServiceBus topic trigger processed message.")
     logging.info("Message Content Type: " + message_content_type)
     logging.info("Message Body: " + message_body)
+
+
+
+
+def getEnvVar(var_name):
+    """
+    fetches an environment variable or raises an exception if not found
+    """
+    val = getenv(var_name)
+    if not val:
+        raise Exception(f"can't find envvar {var_name}")
+    return val
