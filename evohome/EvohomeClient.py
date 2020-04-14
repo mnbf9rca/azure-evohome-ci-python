@@ -137,8 +137,7 @@ class EvohomeClient(object):
         response_timestamp, this_location_data = self.get_one_location_data(locationId)
         temps = []
         for d in this_location_data["devices"]:
-            this_temps = {'heatSetpoint': d["thermostat"]
-                          ["changeableValues"]["heatSetpoint"]["value"]}
+            this_temps = {'heatSetpoint': d["thermostat"]["changeableValues"]["heatSetpoint"]["value"]}
             if d["thermostat"]["indoorTemperatureStatus"] == "Measured":
                 this_temps.update({'indoorTemperature': d["thermostat"]["indoorTemperature"]})
             this_record = {'locationId': locationId,
@@ -146,6 +145,6 @@ class EvohomeClient(object):
                            'deviceId': d["deviceID"],
                            'name': d["name"],
                            'data': this_temps}
-
             temps.append(this_record)
+            # temps.append(this_record)
         return temps
