@@ -1,14 +1,63 @@
 import logging
+from os import getenv
+from json import loads, dumps
 
 import azure.functions as func
+import requests
+
+logger = logging.getLogger("azure.eventhub")
+logger.addFilter(logging.Filter(__name__))
+
+
+def getenv_or_exception(var_name: str) -> str:
+    """
+    fetches an environment variable or raises an exception if not found
+    """
+    val = getenv(var_name)
+    if not val:
+        raise Exception(f"can't find envvar {var_name}")
+    return val
 
 
 def main(message: func.ServiceBusMessage):
+
+    thingspeak_keys = loads(getenv_or_exception("thingspeak_keys_dict"))
+    thingspeak_api_endpoint = getenv_or_exception("thingspeak-api-endpoint")
+
     # Log the Service Bus Message as plaintext
 
     message_content_type = message.content_type
-    message_body = message.get_body().decode("utf-8")
+    message_body = loads(message.get_body().decode("utf-8"))
+    send_message_to_thingspeak(message_body, thingspeak_keys, thingspeak_api_endpoint)
 
     logging.info("Python ServiceBus topic trigger processed message.")
     logging.info("Message Content Type: " + message_content_type)
     logging.info("Message Body: " + message_body)
+
+
+def send_message_to_thingspeak(message: object, keys: dict, api_endpoint: str) -> None:
+
+    headers = {"Content-Type": "application/json",
+               "accept": "application/json`"}
+    payload = create_payload_from_message(message, keys)
+
+    response = requests.post(api_endpoint,
+                             data=dumps(payload),
+                             headers=headers)
+    if not response.ok:
+        raise Exception(
+            f"Didn't get HTTP 200 (OK) response - status_code from server: {response.status_code}\n{response.text}")
+
+
+def create_payload_from_message(message: object, keys: dict) -> object:
+    api_key = keys[message["name"]]
+    timestamp = message["datetime"]
+    setpoint = message["data"]["heatSetpoint"]
+
+    if (message["data"]["indoorTemperature"]) and (int(message["data"]["indoorTemperature"]) <= 60):
+        temperature = message["data"]["indoorTemperature"]
+
+    return {'api_key': api_key,
+            "created_at": timestamp,
+            'field1': temperature,
+            "field2": setpoint}

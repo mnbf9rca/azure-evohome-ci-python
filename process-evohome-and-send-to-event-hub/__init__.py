@@ -1,17 +1,17 @@
 import datetime
 import logging
+from json import dumps
 from os import getenv
 
 import azure.functions as func
-from azure.servicebus import ServiceBusClient, Message as SBC_message, TopicClient
-from azure.servicebus.control_client import ServiceBusService, Message as SBS_Message
-from json import dumps
-
+from azure.servicebus import ServiceBusClient, TopicClient, Message
+from EvohomeClient import EvohomeClient
 
 #pylint: disable=relative-beyond-top-level
 from ..EvoHome.EvohomeClient import EvohomeClient
 
 logger = logging.getLogger("azure.eventhub")
+logger.addFilter(logging.Filter(__name__))
 
 
 def getenv_or_exception(var_name: str) -> str:
@@ -37,24 +37,21 @@ def main(mytimer: func.TimerRequest) -> None:
     eh_usernamne = getenv_or_exception("evohome_username")
     eh_password = getenv_or_exception("evohome_password")
     eh_api_key = getenv_or_exception("evohome_api_key")
-    servicebus_namespace = getenv_or_exception("servicebus_namespace")
-    servicebus_shared_access_key_name = getenv_or_exception("servicebus_shared_access_key_name")
-    servicebus_shared_access_key_value = getenv_or_exception("servicebus_shared_access_key_value")
-    sb_topic_name = getenv_or_exception("servicebus_topic_name")
+    servicebus_evohome_conn_string = getenv_or_exception(
+        "func_send_servicebus_evohome_evohome-v2_conn_string")
+    sb_topic_name = getenv_or_exception("servicebus_evohome_topic")
+
+
+    servicebus_client = ServiceBusClient.from_connection_string(servicebus_evohome_conn_string)
+
+    logging.info(
+        f"Successfully create new ServiceBusClient to {servicebus_client.service_namespace} with servicebus_evohome_conn_string")
+    topic_client = servicebus_client.get_topic(sb_topic_name)
+    logging.info(f"Successfully created TopicClient for {topic_client.address }")
 
     # first, validate evohome connection
     ehc = EvohomeClient(username=eh_usernamne, password=eh_password, appid=eh_api_key)
     logging.info(f"Successfully authenticated to evohome API as {eh_usernamne}")
-
-    # now establish client
-    servicebus_client = ServiceBusClient(service_namespace=servicebus_namespace,
-                               shared_access_key_name=servicebus_shared_access_key_name,
-                               shared_access_key_value=servicebus_shared_access_key_value)
-    
-    logging.info(
-        f"Successfully create new ServiceBusClient with shared_access_key {servicebus_shared_access_key_name} to {servicebus_client.service_namespace}")
-    topic_client = servicebus_client.get_topic(sb_topic_name)
-    logging.info(f"Successfully created TopicClient for {topic_client.address }")
 
     # get all locations
     all_locs = ehc.get_all_locations()
@@ -70,7 +67,7 @@ def main(mytimer: func.TimerRequest) -> None:
 
 def add_to_batch_and_send(device_list: dict, client: TopicClient) -> None:
     logging.info(f"processing batch for {len(device_list)} devices")
-    
-    messages = [SBC_message(dumps(device).encode('utf-8')) for device in device_list]
+    messages = [Message(dumps(device).encode('utf-8')) for device in device_list]
+    logging.info(f"{len(messages)} messages queued")
     client.send(messages=messages)
     logging.info("batch complete")

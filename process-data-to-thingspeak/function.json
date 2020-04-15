@@ -6,9 +6,9 @@
       "name": "message",
       "type": "serviceBusTrigger",
       "direction": "in",
-      "topicName": "evohome-v2",
+      "topicName": "evohome-data-2",
       "subscriptionName": "thingspeak-function",
-      "connection": "servicebus_evohome_evohome-v2_conn_string"
+      "connection": "func_thingspeak_servicebus_evohome_evohome-v2_conn_string"
     }
   ]
 }
