@@ -1,11 +1,13 @@
 import datetime
 import logging
+from azure.servicebus import TopicClient, Message
+from EvohomeClient import EvohomeClient
 from json import dumps
 from os import getenv
 
+
 import azure.functions as func
-from azure.servicebus import ServiceBusClient, TopicClient, Message
-from EvohomeClient import EvohomeClient
+
 
 #pylint: disable=relative-beyond-top-level
 from ..EvoHome.EvohomeClient import EvohomeClient
@@ -29,10 +31,13 @@ def main(mytimer: func.TimerRequest) -> None:
         tzinfo=datetime.timezone.utc).isoformat()
 
     if mytimer.past_due:
-        logging.info('The timer is past due!')
+        logger.info('The timer is past due!')
 
-    logging.info('Python timer trigger function ran at %s', utc_timestamp)
+    logger.info('Python timer trigger function ran at %s', utc_timestamp)
+    process_evohome()
 
+def process_evohome() -> None:
+    
     # get config
     eh_usernamne = getenv_or_exception("evohome_username")
     eh_password = getenv_or_exception("evohome_password")
@@ -41,21 +46,17 @@ def main(mytimer: func.TimerRequest) -> None:
         "func_send_servicebus_evohome_evohome-v2_conn_string")
     sb_topic_name = getenv_or_exception("servicebus_evohome_topic")
 
-
-    servicebus_client = ServiceBusClient.from_connection_string(servicebus_evohome_conn_string)
-
-    logging.info(
-        f"Successfully create new ServiceBusClient to {servicebus_client.service_namespace} with servicebus_evohome_conn_string")
-    topic_client = servicebus_client.get_topic(sb_topic_name)
-    logging.info(f"Successfully created TopicClient for {topic_client.address }")
+    # create a topic client to send items to the servicebus topic
+    topic_client = TopicClient.from_connection_string(servicebus_evohome_conn_string, sb_topic_name)
+    logger.info(f"Successfully created TopicClient for {topic_client.address }")
 
     # first, validate evohome connection
     ehc = EvohomeClient(username=eh_usernamne, password=eh_password, appid=eh_api_key)
-    logging.info(f"Successfully authenticated to evohome API as {eh_usernamne}")
+    logger.info(f"Successfully authenticated to evohome API as {eh_usernamne}")
 
     # get all locations
     all_locs = ehc.get_all_locations()
-    logging.info(f"found {len(all_locs)} locations")
+    logger.info(f"found {len(all_locs)} locations")
     # now get all devices at all locations
     all_devices_all_locs = (ehc.get_thermostat_temperatures(
         location["locationID"]) for location in all_locs)
@@ -64,10 +65,9 @@ def main(mytimer: func.TimerRequest) -> None:
     for device_list in all_devices_all_locs:
         add_to_batch_and_send(device_list, topic_client)
 
-
 def add_to_batch_and_send(device_list: dict, client: TopicClient) -> None:
-    logging.info(f"processing batch for {len(device_list)} devices")
+    logger.info(f"processing batch for {len(device_list)} devices")
     messages = [Message(dumps(device).encode('utf-8')) for device in device_list]
-    logging.info(f"{len(messages)} messages queued")
+    logger.info(f"{len(messages)} messages queued")
     client.send(messages=messages)
-    logging.info("batch complete")
+    logger.info("batch complete")

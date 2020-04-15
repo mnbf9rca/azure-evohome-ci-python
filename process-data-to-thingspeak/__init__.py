@@ -29,10 +29,11 @@ def main(message: func.ServiceBusMessage):
     message_content_type = message.content_type
     message_body = loads(message.get_body().decode("utf-8"))
     send_message_to_thingspeak(message_body, thingspeak_keys, thingspeak_api_endpoint)
+    
 
-    logging.info("Python ServiceBus topic trigger processed message.")
-    logging.info("Message Content Type: " + message_content_type)
-    logging.info("Message Body: " + message_body)
+    logger.info("Python ServiceBus topic trigger processed message.")
+    logger.info("Message Content Type: " + message_content_type)
+    logger.info("Message Body: " + message_body)
 
 
 def send_message_to_thingspeak(message: object, keys: dict, api_endpoint: str) -> None:
@@ -52,10 +53,10 @@ def send_message_to_thingspeak(message: object, keys: dict, api_endpoint: str) -
 def create_payload_from_message(message: object, keys: dict) -> object:
     api_key = keys[message["name"]]
     timestamp = message["datetime"]
-    setpoint = message["data"]["heatSetpoint"]
+    setpoint = message["heatSetpoint"]
 
-    if (message["data"]["indoorTemperature"]) and (int(message["data"]["indoorTemperature"]) <= 60):
-        temperature = message["data"]["indoorTemperature"]
+    if (message["indoorTemperature"]) and (int(message["indoorTemperature"]) <= 60):
+        temperature = message["indoorTemperature"]
 
     return {'api_key': api_key,
             "created_at": timestamp,
