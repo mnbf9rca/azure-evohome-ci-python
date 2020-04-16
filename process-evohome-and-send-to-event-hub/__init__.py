@@ -8,10 +8,6 @@ from os import getenv
 
 import azure.functions as func
 
-
-#pylint: disable=relative-beyond-top-level
-from ..EvoHome.EvohomeClient import EvohomeClient
-
 logger = logging.getLogger("azure.eventhub")
 logger.addFilter(logging.Filter(__name__))
 
