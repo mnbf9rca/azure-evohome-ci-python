@@ -30,7 +30,7 @@ def main(mytimer: func.TimerRequest, outputSbMsg: func.Out[str]) -> None:
         logger.info('The timer is past due!')
 
     logger.info('Python timer trigger function ran at %s', utc_timestamp)
-    process_evohome(outputSbMsg: func.Out[str])
+    process_evohome(outputSbMsg)
 
 def process_evohome(outputSbMsg: func.Out[str]) -> None:
     
