@@ -43,7 +43,7 @@ def process_evohome() -> None:
     eh_password = getenv_or_exception("evohome_password")
     eh_api_key = getenv_or_exception("evohome_api_key")
     servicebus_evohome_conn_string = getenv_or_exception(
-        "func_send_servicebus_evohome_evohome-v2_conn_string")
+        "func_send_servicebus_evohome_evohome_v2_conn_string")
     sb_topic_name = getenv_or_exception("servicebus_evohome_topic")
 
     # create a topic client to send items to the servicebus topic
