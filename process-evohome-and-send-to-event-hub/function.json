@@ -12,7 +12,7 @@
       "direction": "out",
       "connection": "functions_send",
       "name": "outputSbMsg",
-      "topicName": "evohome-data-2"
+      "topicName": "servicebus_evohome_topic"
     }
   ]
 }
