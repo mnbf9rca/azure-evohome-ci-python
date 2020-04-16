@@ -8,7 +8,7 @@ from os import getenv
 
 import azure.functions as func
 
-logger = logging.getLogger("azure.eventhub")
+logger = logging.getLogger()
 logger.addFilter(logging.Filter(__name__))
 
 

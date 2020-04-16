@@ -6,6 +6,13 @@
       "type": "timerTrigger",
       "direction": "in",
       "schedule": "17 */5 * * * *"
+    },
+    {
+      "type": "serviceBus",
+      "direction": "out",
+      "connection": "func_send_servicebus_evohome_evohome_v2_conn_string",
+      "name": "outputSbMsg",
+      "topicName": "evohome-data-2"
     }
   ]
 }
