@@ -12,7 +12,14 @@
       "direction": "out",
       "connection": "functions_send",
       "name": "outputSbMsg",
-      "topicName": "servicebus_evohome_topic"
+      "topicName": "evohome-data-2"
+    },
+    {
+      "type": "eventHub",
+      "direction": "out",
+      "name": "outputEventHubMessage",
+      "connection": "cynexia_eh_functions_send_EVENTHUB",
+      "eventHubName": "lincoln"
     }
   ]
 }
