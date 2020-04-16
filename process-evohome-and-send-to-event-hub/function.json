@@ -10,7 +10,7 @@
     {
       "type": "serviceBus",
       "direction": "out",
-      "connection": "func_send_servicebus_evohome_evohome_v2_conn_string",
+      "connection": "functions_send",
       "name": "outputSbMsg",
       "topicName": "evohome-data-2"
     }

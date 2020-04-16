@@ -21,7 +21,7 @@ def getenv_or_exception(var_name: str) -> str:
         raise Exception(f"can't find envvar {var_name}")
     return val
 
-
+# pylint: disable=unsubscriptable-object
 def main(mytimer: func.TimerRequest, outputSbMsg: func.Out[str]) -> None:
     utc_timestamp = datetime.datetime.utcnow().replace(
         tzinfo=datetime.timezone.utc).isoformat()
@@ -66,5 +66,5 @@ def add_to_batch_and_send(device_list: dict, outputSbMsg: func.Out[str]) -> None
     # messages = [Message(dumps(device).encode('utf-8')) for device in device_list]
     # logger.info(f"{len(messages)} messages queued")
     # client.send(messages=messages)
-    outputSbMsg.set(dumps(device).encode('utf-8')) for device in device_list
+    for device in device_list: outputSbMsg.set(dumps(device).encode('utf-8'))
     logger.info("batch complete")
