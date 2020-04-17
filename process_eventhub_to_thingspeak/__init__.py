@@ -1,25 +1,18 @@
 import logging
-from os import getenv, environ
 from json import loads
+from os import environ
 
 import azure.functions as func
-logger = logging.getLogger("azure.func")
-logger.setLevel(logging.INFO)
 
 from .thingspeak import send_message_to_thingspeak
 
-def getenv_or_exception(var_name: str) -> str:
-    """
-    fetches an environment variable or raises an exception if not found
-    """
-    val = getenv(var_name)
-    if not val:
-        raise Exception(f"can't find envvar {var_name}")
-    return val
+logger = logging.getLogger("azure.func")
+logger.setLevel(logging.INFO)
+
 
 def main(event: func.EventHubEvent):
-    thingspeak_dict = loads(environ["thingspeak_keys_dict"])
-    thingspeak_api = environ["thingspeak_api_endpoint"]
+    thingspeak_dict = loads(environ.get("thingspeak_keys_dict"))
+    thingspeak_api = environ.get("thingspeak_api_endpoint")
 
     messages = loads(event.get_body().decode('utf-8'))
     for message in messages:

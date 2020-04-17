@@ -1,7 +1,7 @@
-from requests import post, Response
+import logging
 from json import dumps, loads
 
-import logging
+from requests import Response, post
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)

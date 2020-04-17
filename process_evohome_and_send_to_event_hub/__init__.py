@@ -1,7 +1,7 @@
 import datetime
 import logging
 from json import dumps
-from os import getenv
+from os import environ
 
 import azure.functions as func
 
@@ -9,15 +9,6 @@ from .evohome import EvohomeClient
 
 logger = logging.getLogger("azure.func")
 
-
-def getenv_or_exception(var_name: str) -> str:
-    """
-    fetches an environment variable or raises an exception if not found
-    """
-    val = getenv(var_name)
-    if not val:
-        raise Exception(f"can't find envvar {var_name}")
-    return val
 
 # pylint: disable=unsubscriptable-object
 
@@ -36,9 +27,9 @@ def main(mytimer: func.TimerRequest, outputEventHubMessage: func.Out[str]) -> No
 def process_evohome(outputEventHubMessage: func.Out[str]) -> None:
 
     # get config
-    eh_usernamne = getenv_or_exception("evohome_username")
-    eh_password = getenv_or_exception("evohome_password")
-    eh_api_key = getenv_or_exception("evohome_api_key")
+    eh_usernamne = environ.get("evohome_username")
+    eh_password = environ.get("evohome_password")
+    eh_api_key = environ.get("evohome_api_key")
 
     # first, validate evohome connection
     ehc = EvohomeClient(username=eh_usernamne, password=eh_password, appid=eh_api_key)
