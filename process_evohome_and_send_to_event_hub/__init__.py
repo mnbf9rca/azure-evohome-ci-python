@@ -22,7 +22,7 @@ def getenv_or_exception(var_name: str) -> str:
 # pylint: disable=unsubscriptable-object
 
 
-def main(mytimer: func.TimerRequest, outputSbMsg: func.Out[str], outputEventHubMessage: func.Out[str]) -> None:
+def main(mytimer: func.TimerRequest, outputEventHubMessage: func.Out[str]) -> None:
     utc_timestamp = datetime.datetime.utcnow().replace(
         tzinfo=datetime.timezone.utc).isoformat()
 
@@ -30,10 +30,10 @@ def main(mytimer: func.TimerRequest, outputSbMsg: func.Out[str], outputEventHubM
         logger.info('The timer is past due!')
 
     logger.info('Python timer trigger function ran at %s', utc_timestamp)
-    process_evohome(outputSbMsg, outputEventHubMessage)
+    process_evohome(outputEventHubMessage)
 
 
-def process_evohome(outputSbMsg: func.Out[str], outputEventHubMessage: func.Out[str]) -> None:
+def process_evohome(outputEventHubMessage: func.Out[str]) -> None:
 
     # get config
     eh_usernamne = getenv_or_exception("evohome_username")
@@ -54,12 +54,11 @@ def process_evohome(outputSbMsg: func.Out[str], outputEventHubMessage: func.Out[
 
     # add to batches and send...
     for device_list in all_devices_all_locs:
-        add_to_batch_and_send(device_list, outputSbMsg, outputEventHubMessage)
+        add_to_batch_and_send(device_list,outputEventHubMessage)
 
 
-def add_to_batch_and_send(device_list: dict, outputSbMsg: func.Out[str], outputEventHubMessage: func.Out[str]) -> None:
+def add_to_batch_and_send(device_list: dict, outputEventHubMessage: func.Out[str]) -> None:
     logger.info(f"processing batch for {len(device_list)} devices")
     for device in device_list:
-        outputSbMsg.set(dumps(device).encode('utf-8'))
         outputEventHubMessage.set(dumps(device).encode('utf-8'))
     logger.info("batch complete")
