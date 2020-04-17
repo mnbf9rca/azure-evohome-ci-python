@@ -1,5 +1,6 @@
 import logging
 from os import getenv, environ
+from json import loads
 
 import azure.functions as func
 logger = logging.getLogger("azure.func")
@@ -17,7 +18,7 @@ def getenv_or_exception(var_name: str) -> str:
     return val
 
 def main(event: func.EventHubEvent):
-    message = event.get_body().decode('utf-8')
+    message = loads(event.get_body().decode('utf-8'))
     logger.info(f"received message: {message}")
     thingspeak_dict = environ["thingspeak_keys_dict"]
     thingspeak_api = environ["thingspeak_api_endpoint"]
