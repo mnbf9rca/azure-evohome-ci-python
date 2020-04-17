@@ -49,7 +49,7 @@ def process_evohome(outputEventHubMessage: func.Out[str]) -> None:
 
 
 def add_to_batch_and_send(device_list: dict, outputEventHubMessage: func.Out[str]) -> None:
-    logger.info(f"processing batch for {len(device_list)} devices")
+    logger.info(f"processing batch for {len(device_list)} devices: {device_list}")
     for device in device_list:
         outputEventHubMessage.set(dumps(device).encode('utf-8'))
     logger.info("batch complete")
