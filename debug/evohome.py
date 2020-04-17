@@ -5,7 +5,8 @@ from os import getenv
 
 from azure.servicebus import Message, TopicClient
 from dotenv import load_dotenv
-from EvohomeClient import EvohomeClient
+#pylint: disable=relative-beyond-top-level
+from ..process_evohome_and_send_to_event_hub.evohome import EvohomeClient
 
 logger = logging.getLogger("azure.eventhub")
 logger.addFilter(logging.Filter(__name__))

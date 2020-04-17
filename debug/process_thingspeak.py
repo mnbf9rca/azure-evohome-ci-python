@@ -9,6 +9,9 @@ import requests
 from azure import functions as func
 from azure.functions import ServiceBusMessage
 
+# import doesnt work because of - vs _
+from ..process_evohome_and_send_to_event_hub.thingspeak import send_message_to_thingspeak
+
 from unittest import mock
 
 logger = logging.getLogger()
@@ -34,37 +37,10 @@ def main(message: func.ServiceBusMessage):
 
     # Log the Service Bus Message as plaintext
 
-    message_content_type = message.content_type
     message_body = loads(message.get_body().decode("utf-8"))
     send_message_to_thingspeak(message_body, thingspeak_keys, thingspeak_api_endpoint)
 
 
-def send_message_to_thingspeak(message: object, keys: dict, api_endpoint: str) -> None:
-
-    headers = {"Content-Type": "application/json",
-               "accept": "application/json`"}
-    payload = create_payload_from_message(message, keys)
-
-    response = requests.post(api_endpoint,
-                             data=dumps(payload),
-                             headers=headers)
-    if not response.ok:
-        raise Exception(
-            f"Didn't get HTTP 200 (OK) response - status_code from server: {response.status_code}\n{response.text}")
-
-
-def create_payload_from_message(message: object, keys: dict) -> object:
-    api_key = keys[message["name"]]
-    timestamp = message["datetime"]
-    setpoint = message["heatSetpoint"]
-
-    if (message["indoorTemperature"]) and (int(message["indoorTemperature"]) <= 60):
-        temperature = message["indoorTemperature"]
-
-    return {'api_key': api_key,
-            "created_at": timestamp,
-            'field1': temperature,
-            "field2": setpoint}
 
 
 sb_topic_name = getenv_or_exception("servicebus_evohome_topic")

@@ -7,13 +7,7 @@
       "direction": "in",
       "schedule": "17 */5 * * * *"
     },
-    {
-      "type": "serviceBus",
-      "direction": "out",
-      "connection": "functions_send",
-      "name": "outputSbMsg",
-      "topicName": "evohome-data-2"
-    },
+    
     {
       "type": "eventHub",
       "direction": "out",
