@@ -5,6 +5,8 @@ from os import environ
 
 import azure.functions as func
 
+import typing
+
 from .evohome import EvohomeClient
 
 logger = logging.getLogger("azure.func")
@@ -12,8 +14,7 @@ logger = logging.getLogger("azure.func")
 
 # pylint: disable=unsubscriptable-object
 
-
-def main(mytimer: func.TimerRequest, outputEventHubMessage: func.Out[str]) -> None:
+def main(mytimer: func.TimerRequest) :
     utc_timestamp = datetime.datetime.utcnow().replace(
         tzinfo=datetime.timezone.utc).isoformat()
 
@@ -21,10 +22,10 @@ def main(mytimer: func.TimerRequest, outputEventHubMessage: func.Out[str]) -> No
         logger.info('The timer is past due!')
 
     logger.info('Python timer trigger function ran at %s', utc_timestamp)
-    process_evohome(outputEventHubMessage)
+    return process_evohome()
 
 
-def process_evohome(outputEventHubMessage: func.Out[str]) -> None:
+def process_evohome() -> typing.List[str]:
 
     # get config
     eh_usernamne = environ.get("evohome_username")
@@ -40,16 +41,19 @@ def process_evohome(outputEventHubMessage: func.Out[str]) -> None:
     logger.info(f"found {len(all_locs)} locations")
 
     # now get all devices at all locations
-    all_devices_all_locs = (ehc.get_thermostat_temperatures(
-        location["locationID"]) for location in all_locs)
+    all_devices_all_locs = []
+    for location in all_locs: 
+        all_devices_all_locs = all_devices_all_locs + ehc.get_thermostat_temperatures(location["locationID"])
 
-    # add to batches and send...
-    for device_list in all_devices_all_locs:
-        add_to_batch_and_send(device_list,outputEventHubMessage)
+    # create a list of strings to send as messages
+    
+    return [dumps(d) for d in all_devices_all_locs]
 
 
-def add_to_batch_and_send(device_list: dict, outputEventHubMessage: func.Out[str]) -> None:
+'''
+def add_to_batch_and_send(device_list: dict) -> typing.List[str]:
     logger.info(f"processing batch for {len(device_list)} devices: {device_list}")
     for device in device_list:
         outputEventHubMessage.set(dumps(device).encode('utf-8'))
     logger.info("batch complete")
+'''
