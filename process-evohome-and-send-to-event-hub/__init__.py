@@ -1,13 +1,14 @@
 import datetime
 import logging
-from EvohomeClient import EvohomeClient
 from json import dumps
 from os import getenv
 
-
 import azure.functions as func
 
+from .evohome import EvohomeClient
+
 logger = logging.getLogger("azure.func")
+
 
 def getenv_or_exception(var_name: str) -> str:
     """
@@ -19,6 +20,8 @@ def getenv_or_exception(var_name: str) -> str:
     return val
 
 # pylint: disable=unsubscriptable-object
+
+
 def main(mytimer: func.TimerRequest, outputSbMsg: func.Out[str], outputEventHubMessage: func.Out[str]) -> None:
     utc_timestamp = datetime.datetime.utcnow().replace(
         tzinfo=datetime.timezone.utc).isoformat()
