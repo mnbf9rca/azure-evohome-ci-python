@@ -8,7 +8,7 @@ logger.setLevel(logging.INFO)
 
 
 def send_message_to_thingspeak(message_body: dict, keys: dict, api_endpoint: str) -> None:
-    logger.info(f"recevived message: {message_body}")
+    logger.info(f"processing message: {message_body}")
     headers = {"Content-Type": "application/json",
                "accept": "application/json`"}
     

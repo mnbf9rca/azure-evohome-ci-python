@@ -18,9 +18,12 @@ def getenv_or_exception(var_name: str) -> str:
     return val
 
 def main(event: func.EventHubEvent):
-    message = loads(event.get_body().decode('utf-8'))
-    logger.info(f"received message: {message}")
-    thingspeak_dict = environ["thingspeak_keys_dict"]
+    thingspeak_dict = loads(environ["thingspeak_keys_dict"])
     thingspeak_api = environ["thingspeak_api_endpoint"]
-    send_message_to_thingspeak(message, thingspeak_dict, thingspeak_api)
-    logger.info("Sent to thingspeak")
+
+    messages = loads(event.get_body().decode('utf-8'))
+    for message in messages:
+        logger.info(f"received message: {message}")
+
+        send_message_to_thingspeak(message, thingspeak_dict, thingspeak_api)
+        logger.info("Sent to thingspeak")
