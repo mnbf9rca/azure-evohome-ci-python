@@ -43,7 +43,7 @@ def process_evohome() -> typing.List[str]:
     # now get all devices at all locations
     all_devices_all_locs = []
     for location in all_locs: 
-        all_devices_all_locs = all_devices_all_locs + ehc.get_thermostat_temperatures(location["locationID"])
+        all_devices_all_locs = all_devices_all_locs + [{**{"type":"temperature"}, **data }for data in ehc.get_thermostat_temperatures(location["locationID"])]
 
     # create a list of strings to send as messages
     
