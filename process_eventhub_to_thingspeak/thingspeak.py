@@ -86,11 +86,11 @@ def get_fields(message: dict) -> dict:
 
     elif message["type"] == "cloud_scales":
         ''' weight measurements from scales 
-            field1: average/values
+            field1: average/value
             field2: average/units
             field3: temperature'''
         result = {}
-        if message['event'] == "average/values":
+        if message['event'] == "average/value":
             result['field1'] = message['data']
         elif message['event'] ==  "average/units":
             result['field2'] = message['data']
