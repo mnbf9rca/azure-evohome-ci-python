@@ -90,12 +90,12 @@ def get_fields(message: dict) -> dict:
             field2: average/units
             field3: temperature'''
         result = {}
-        if "average/values" in message:
-            result['field1'] = message['average/values']
-        if "average/units" in message:
-            result['field1'] = message['average/units']
+        if message['event'] == "average/values":
+            result['field1'] = message['data']
+        if message['event'] ==  "average/units" in message:
+            result['field2'] = message['data']
         if "temperature" in message:
-            result['field1'] = message['temperature']         
+            result['field3'] = message['temperature']         
 
         return result   
     else:
