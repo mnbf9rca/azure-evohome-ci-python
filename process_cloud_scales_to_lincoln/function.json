@@ -9,6 +9,13 @@
       "connection": "cynexia_eh_cloud_scales_functions_listen",
       "cardinality": "many",
       "consumerGroup": "$Default"
+    },
+    {
+      "type": "eventHub",
+      "direction": "out",
+      "name": "$return",
+      "connection": "cynexia_eh_functions_send_EVENTHUB",
+      "eventHubName": "lincoln"
     }
   ]
 }
