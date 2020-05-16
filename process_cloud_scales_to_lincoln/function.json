@@ -7,7 +7,7 @@
       "direction": "in",
       "eventHubName": "cloud_scales",
       "connection": "cynexia_eh_cloud_scales_functions_listen",
-      "cardinality": "many",
+      "cardinality": "one",
       "consumerGroup": "$Default"
     },
     {

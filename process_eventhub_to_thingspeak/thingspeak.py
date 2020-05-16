@@ -4,7 +4,6 @@ from json import dumps, loads
 from requests import Response, post
 
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
 
 
 def send_message_to_thingspeak(message_body: dict, keys: dict, api_endpoint: str) -> None:
