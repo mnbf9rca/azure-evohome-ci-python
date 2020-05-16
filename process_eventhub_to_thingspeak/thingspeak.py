@@ -39,7 +39,7 @@ def create_payload_from_message(message: dict, keys: dict) -> dict:
             keys        dict of name:api_key values for each thingspeak channel
 
         Returns:
-            dict of:
+            dict {api_key, created_at, field1 ... fieldn}:
             api_key     relevant thingspeak channel API key
             created_at  timestamp from the message
             fieldn      relevant data fields mapped according to message type
@@ -48,6 +48,7 @@ def create_payload_from_message(message: dict, keys: dict) -> dict:
     timestamp = message["datetime"]
 
     data_fields = get_fields(message)
+    logger.info(f"data_fields: {dumps(data_fields)}")
     metadata_fields = {'api_key': api_key,
                        "created_at": timestamp}
 
