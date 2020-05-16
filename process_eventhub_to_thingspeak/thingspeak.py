@@ -83,6 +83,21 @@ def get_fields(message: dict) -> dict:
                 "field2": message['gas_cost'],
                 "field3": message['electricity_consumption'],
                 "field4": message['electricity_cost']}
+
+    elif message["type"] == "cloud_scales":
+        ''' weight measurements from scales 
+            field1: average/values
+            field2: average/units
+            field3: temperature'''
+        result = {}
+        if "average/values" in message:
+            result['field1'] = message['average/values']
+        if "average/units" in message:
+            result['field1'] = message['average/units']
+        if "temperature" in message:
+            result['field1'] = message['temperature']         
+
+        return result   
     else:
         # dont know this message type
         raise ValueError(f"Message type not known: {message['type']}")
