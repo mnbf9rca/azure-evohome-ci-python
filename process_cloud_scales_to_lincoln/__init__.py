@@ -10,7 +10,7 @@ def main(event: func.EventHubEvent):
                  event.get_body().decode('utf-8'))
     message = loads(event.get_body().decode('utf-8'))
     logging.info(f"received message: {message}")
-    
+
     message['datetime'] = dateutil_parse(message['published_at']).timestamp()
     logging.info('composed message %s', dumps(message))
-    return message
+    return dumps(message)
