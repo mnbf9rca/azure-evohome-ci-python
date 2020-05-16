@@ -91,8 +91,11 @@ def get_fields(message: dict) -> dict:
         result = {}
         if message['event'] == "average/values":
             result['field1'] = message['data']
-        if message['event'] ==  "average/units" in message:
+        elif message['event'] ==  "average/units":
             result['field2'] = message['data']
+
+        else:
+            raise ValueError(f"Unable to understand event type: '{message['event']}'")
         if "temperature" in message:
             result['field3'] = message['temperature']         
 
