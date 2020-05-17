@@ -8,7 +8,7 @@
       "eventHubName": "lincoln",
       "connection": "cynexia_eh_functions_listen_EVENTHUB",
       "cardinality": "one",
-      "consumerGroup": "$Default"
+      "consumerGroup": "thingspeak"
     }
   ]
 }
