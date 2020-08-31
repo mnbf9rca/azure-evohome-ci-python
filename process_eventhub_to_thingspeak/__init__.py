@@ -15,7 +15,7 @@ def main(event: func.EventHubEvent):
     thingspeak_api = environ.get("thingspeak_api_endpoint")
 
     message = loads(event.get_body().decode('utf-8'))
-    logger.info(f"received message: {message}")
+    logger.debug(f"received message: {message}")
 
     send_message_to_thingspeak(message, thingspeak_dict, thingspeak_api)
-    logger.info("Sent to thingspeak")
+    logger.debug("Sent to thingspeak")

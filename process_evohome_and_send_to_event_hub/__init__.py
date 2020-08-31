@@ -19,9 +19,9 @@ def main(mytimer: func.TimerRequest) :
         tzinfo=datetime.timezone.utc).isoformat()
 
     if mytimer.past_due:
-        logger.info('The timer is past due!')
+        logger.debug('The timer is past due!')
 
-    logger.info('Python timer trigger function ran at %s', utc_timestamp)
+    logger.debug('Python timer trigger function ran at %s', utc_timestamp)
     return process_evohome()
 
 
@@ -34,11 +34,11 @@ def process_evohome() -> typing.List[str]:
 
     # first, validate evohome connection
     ehc = EvohomeClient(username=eh_usernamne, password=eh_password, appid=eh_api_key)
-    logger.info(f"Successfully authenticated to evohome API as {eh_usernamne}")
+    logger.debug(f"Successfully authenticated to evohome API as {eh_usernamne}")
 
     # get all locations
     all_locs = ehc.get_all_locations()
-    logger.info(f"found {len(all_locs)} locations")
+    logger.debug(f"found {len(all_locs)} locations")
 
     # now get all devices at all locations
     all_devices_all_locs = []
