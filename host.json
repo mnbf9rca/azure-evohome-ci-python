@@ -7,7 +7,7 @@
   "logging": {
     "fileLoggingMode": "debugOnly",
     "logLevel": {
-      "default": "Warning"
+      "default": "Information"
     }
   }
 }

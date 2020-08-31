@@ -21,7 +21,7 @@ def main(mytimer: func.TimerRequest) :
     if mytimer.past_due:
         logger.debug('The timer is past due!')
 
-    logger.debug('Python timer trigger function ran at %s', utc_timestamp)
+    logger.info('Python timer trigger function ran at %s', utc_timestamp)
     return process_evohome()
 
 
