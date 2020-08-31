@@ -6,8 +6,8 @@ import azure.functions as func
 
 from .thingspeak import send_message_to_thingspeak
 
-logger = logging.getLogger("azure.func")
-logger.setLevel(logging.INFO)
+logger = logging.getLogger(f"azure.func.{__name__}")
+
 
 
 def main(event: func.EventHubEvent):

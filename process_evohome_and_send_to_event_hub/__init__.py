@@ -9,7 +9,7 @@ import typing
 
 from .evohome import EvohomeClient
 
-logger = logging.getLogger("azure.func")
+logger = logging.getLogger(f"azure.func.{__name__}")
 
 
 # pylint: disable=unsubscriptable-object
