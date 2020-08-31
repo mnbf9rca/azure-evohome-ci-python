@@ -62,10 +62,10 @@ def _cloud_scales(message: dict) -> dict:
     result = {}
     if message['event'] == "measurement/weight/value":
         result['field1'] = message['data']
-    elif message['event'] ==  "measurement/weight/units":
+    elif message['event'] == "measurement/weight/units":
         result['field2'] = message['data']
-    elif message['event'] == "measurement/temperature/c" and "temperature" in message:
-        result['field3'] = message['temperature']   
+    elif message['event'] == "measurement/temperature/c":
+        result['field3'] = message['data']   
 
     else:
         raise ValueError(f"Unable to understand event type: '{message['event']}' in message '{dumps(message)}'")
