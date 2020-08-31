@@ -98,7 +98,7 @@ def get_fields(message: dict) -> dict:
             result['field3'] = message['temperature']   
 
         else:
-            raise ValueError(f"Unable to understand event type: '{message['event']}' in message '{json.dumps(message)}'")
+            raise ValueError(f"Unable to understand event type: '{message['event']}' in message '{dumps(message)}'")
        
 
         return result   
