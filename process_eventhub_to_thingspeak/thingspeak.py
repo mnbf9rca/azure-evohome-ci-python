@@ -47,13 +47,57 @@ def _create_payload_from_message(message: dict, keys: dict) -> dict:
     api_key = keys[message["name"]]
     timestamp = message["datetime"]
 
-    data_fields = get_fields(message)
+    data_fields = _get_fields(message)
     logger.debug(f"data_fields: {dumps(data_fields)}")
     metadata_fields = {'api_key': api_key,
                        "created_at": timestamp}
 
     return {**metadata_fields, **data_fields}
 
+def _get_fields(message: dict) -> dict:
+    '''Returns the data fields for thingspeak based on the message type
+        accepts:
+            message:    message
+        returns:
+            dict of field:value pairs'''
+    if message["type"] == "temperature":
+        return _temperature(message)
+
+    elif message["type"] == "energy":
+        return _energy(message)
+
+    elif message["type"] == "cloud_scales":
+        return _cloud_scales(message)
+
+   
+    else:
+        # dont know this message type
+        raise ValueError(f"Message type not known: {message['type']} in message '{dumps(message)}'")
+
+
+def _temperature(message: dict) -> dict:
+    ''' Temperature data from evohome
+        field1: temperature
+        field2: setpoint
+        '''
+    if (message["indoorTemperature"]) and (int(message["indoorTemperature"]) <= 60):
+        temperature = message["indoorTemperature"]
+
+    return {'field1': temperature,
+            'field2': message["heatSetpoint"]}
+
+def _energy(message: dict) -> dict:
+    ''' gas/electricity consumption from hildebrand
+        field1: gas_consumption
+        field2: gas_cost
+        field3: electricity_consumption
+        field4: electricity_cost
+        '''
+    return {'field1': message['gas_consumption'],
+            "field2": message['gas_cost'],
+            "field3": message['electricity_consumption'],
+            "field4": message['electricity_cost']}
+            
 def _cloud_scales(message: dict) -> dict:
     ''' weight measurements from scales 
         field1: average/value
@@ -72,44 +116,3 @@ def _cloud_scales(message: dict) -> dict:
 
     return result
 
-def _energy(message: dict) -> dict:
-    ''' gas/electricity consumption from hildebrand
-        field1: gas_consumption
-        field2: gas_cost
-        field3: electricity_consumption
-        field4: electricity_cost
-        '''
-    return {'field1': message['gas_consumption'],
-            "field2": message['gas_cost'],
-            "field3": message['electricity_consumption'],
-            "field4": message['electricity_cost']}
-
-def _temperature(message: dict) -> dict:
-    ''' Temperature data from evohome
-        field1: temperature
-        field2: setpoint
-        '''
-    if (message["indoorTemperature"]) and (int(message["indoorTemperature"]) <= 60):
-        temperature = message["indoorTemperature"]
-
-    return {'field1': temperature,
-            'field2': message["heatSetpoint"]}
-
-def get_fields(message: dict) -> dict:
-    '''Returns the data fields for thingspeak based on the message type
-        accepts:
-            message:    message
-        returns:
-            dict of field:value pairs'''
-    if message["type"] == "temperature":
-        return _temperature(message)
-
-    elif message["type"] == "energy":
-        return _energy(message)
-
-    elif message["type"] == "cloud_scales":
-        return _cloud_scales(message)
-   
-    else:
-        # dont know this message type
-        raise ValueError(f"Message type not known: {message['type']} in message '{dumps(message)}'")
