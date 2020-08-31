@@ -30,7 +30,7 @@ class EvohomeClient(object):
 
     def __init__(self, username: str, password: str, appid: str):
         '''Validate credentials, store token'''
-        logger.info("Initialising EvohomeClient")
+        logger.debug("Initialising EvohomeClient")
         self._api_base = 'https://tccna.honeywell.com/WebApi/'
         self._username = username
         self._password = password
@@ -51,7 +51,7 @@ class EvohomeClient(object):
                           "ApplicationId": self._appid}
         headers = {"Content-Type": "application/json",
                    "accept": "application/json`"}
-        logger.info("requesting credentials")
+        logger.debug("requesting credentials")
         response = requests.post(uri,
                                  data=dumps(SessionRequest),
                                  headers=headers)
@@ -76,7 +76,7 @@ class EvohomeClient(object):
                    "accept": "application/json`"}
         query = {"userId": self._userID,
                  "allData": False}
-        logger.info("requesting all locations")
+        logger.debug("requesting all locations")
         response = requests.get(url=uri,
                                 headers=headers,
                                 params=query)
@@ -100,7 +100,7 @@ class EvohomeClient(object):
                    "accept": "application/json`"}
         query = {"locationId": locationId,
                  "allData": True}
-        logger.info(f"requesting locations {locationId}")
+        logger.debug(f"requesting locations {locationId}")
         response = requests.get(url=uri,
                                 headers=headers,
                                 params=query)
