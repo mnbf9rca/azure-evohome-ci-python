@@ -60,9 +60,9 @@ def _cloud_scales(message: dict) -> dict:
         field2: average/units
         field3: temperature'''
     result = {}
-    if message['event'] == "average/value":
+    if message['event'] == "measurement/weight/value":
         result['field1'] = message['data']
-    elif message['event'] ==  "average/units":
+    elif message['event'] ==  "measurement/weight/units":
         result['field2'] = message['data']
     elif message['event'] == "measurement/temperature/c" and "temperature" in message:
         result['field3'] = message['temperature']   
