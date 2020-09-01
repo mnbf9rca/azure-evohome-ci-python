@@ -54,6 +54,7 @@ def _create_payload_from_message(message: dict, keys: dict) -> dict:
 
     return {**metadata_fields, **data_fields}
 
+
 def _get_fields(message: dict) -> dict:
     '''Returns the data fields for thingspeak based on the message type
         accepts:
@@ -69,7 +70,6 @@ def _get_fields(message: dict) -> dict:
     elif message["type"] == "cloud_scales":
         return _cloud_scales(message)
 
-   
     else:
         # dont know this message type
         raise ValueError(f"Message type not known: {message['type']} in message '{dumps(message)}'")
@@ -80,11 +80,12 @@ def _temperature(message: dict) -> dict:
         field1: temperature
         field2: setpoint
         '''
-    if (message["indoorTemperature"]) and (int(message["indoorTemperature"]) <= 60):
+    if ("indoorTemperature" in message) and (int(message["indoorTemperature"]) <= 60):
         temperature = message["indoorTemperature"]
 
     return {'field1': temperature,
-            'field2': message["heatSetpoint"]}
+            'field2': message.get("heatSetpoint")}
+
 
 def _energy(message: dict) -> dict:
     ''' gas/electricity consumption from hildebrand
@@ -93,11 +94,12 @@ def _energy(message: dict) -> dict:
         field3: electricity_consumption
         field4: electricity_cost
         '''
-    return {'field1': message['gas_consumption'],
-            "field2": message['gas_cost'],
-            "field3": message['electricity_consumption'],
-            "field4": message['electricity_cost']}
-            
+    return {'field1': message.get('gas_consumption'),
+            "field2": message.get('gas_cost'),
+            "field3": message.get('electricity_consumption'),
+            "field4": message.get('electricity_cost')}
+
+
 def _cloud_scales(message: dict) -> dict:
     ''' weight measurements from scales 
         field1: average/value
@@ -105,14 +107,14 @@ def _cloud_scales(message: dict) -> dict:
         field3: temperature'''
     result = {}
     if message['event'] == "measurement/weight/value":
-        result['field1'] = message['data']
+        result['field1'] = message.get('data')
     elif message['event'] == "measurement/weight/units":
-        result['field2'] = message['data']
+        result['field2'] = message.get('data')
     elif message['event'] == "measurement/temperature/c":
-        result['field3'] = message['data']   
+        result['field3'] = message.get('data')
 
     else:
-        raise ValueError(f"Unable to understand event type: '{message['event']}' in message '{dumps(message)}'")
+        raise ValueError(
+            f"Unable to understand event type: '{message['event']}' in message '{dumps(message)}'")
 
     return result
-

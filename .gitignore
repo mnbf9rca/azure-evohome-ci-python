@@ -137,3 +137,4 @@ local.settings.json
 .telemetry
 .vscode
 .DS_Store
+.env
